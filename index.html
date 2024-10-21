@@ -6,9 +6,13 @@
     <title>8 Puzzle Solver</title>
     <style>
         body {
-            background-color: rgb(220, 135, 7);
+            background-color: rgb(79, 172, 197);
             font-family: Arial, sans-serif;
             text-align: center;
+        }
+
+        h1 {
+            font-weight: bold;
         }
 
         #game {
@@ -27,25 +31,26 @@
             text-align: center;
             font-size: 24px;
             font-weight: bold;
+            background-color: white; /* Cuadros blancos para los números */
         }
 
         button {
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 18px;
-            background-color: #fff;
-            color: #000;
+            background-color: blue; /* Color azul */
+            color: #fff;
             border: none;
             cursor: pointer;
         }
 
         button:hover {
-            background-color: #ddd;
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>Solucionador del 8Puzle de las Losetas</h1>
+    <h1>SOLUCIONADOR DEL 8 PUZLE DE LAS LOSETAS (DARWIN)</h1>
     <div id="game">
         <table id="puzzle-board">
             <!-- Aquí se insertará la tabla interactiva del puzle -->
@@ -106,8 +111,8 @@
         }
 
         function solvePuzzle(initialState) {
-            const queue = [[initialState, []]];  // Cola de prioridad
-            const visited = new Set();  // Conjunto de estados visitados
+            const queue = [[initialState, []]];
+            const visited = new Set();
 
             while (queue.length > 0) {
                 const [currentState, path] = queue.shift();
@@ -131,7 +136,7 @@
 
         function renderPuzzle(state) {
             const table = document.getElementById('puzzle-board');
-            table.innerHTML = '';  // Limpiar la tabla
+            table.innerHTML = ''; 
 
             state.forEach(row => {
                 const tr = document.createElement('tr');
@@ -151,7 +156,7 @@
                 solution.forEach((step, index) => {
                     setTimeout(() => {
                         renderPuzzle(step);
-                    }, index * 4000);  // Intervalo de 4 segundos entre cada movimiento
+                    }, index * 2000);  // Intervalo de 2 segundos entre cada movimiento
                 });
             } else {
                 alert('No se pudo encontrar una solución');
