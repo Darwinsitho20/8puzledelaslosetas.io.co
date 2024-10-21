@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8 Puzzle Solver</title>
+    <style>
+        body {
+            background-color: rgb(220, 135, 7);
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        #game {
+            margin: 50px auto;
+        }
+
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+
+        table td {
+            width: 60px;
+            height: 60px;
+            border: 2px solid black;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #fff;
+            color: #000;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Solucionador del 8Puzle de las Losetas</h1>
+    <div id="game">
+        <table id="puzzle-board">
+            <!-- Aquí se insertará la tabla interactiva del puzle -->
+        </table>
+    </div>
+    <button id="solve-btn">Resolver Puzle</button>
+
+    <script>
+        const goalState = [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 0]
+        ];
+
+        const initialState = [
+            [1, 2, 3],
+            [4, 0, 6],
+            [7, 5, 8]
+        ];
+
+        function heuristic(state) {
+            let cost = 0;
+            for (let i = 0; i < state.length; i++) {
+                for (let j = 0; j < state[i].length; j++) {
+                    if (state[i][j] !== 0 && state[i][j] !== goalState[i][j]) {
+                        cost++;
+                    }
+                }
+            }
+            return cost;
+        }
+
+        function findPosition(state, tile) {
+            for (let i = 0; i < state.length; i++) {
+                for (let j = 0; j < state[i].length; j++) {
+                    if (state[i][j] === tile) {
+                        return [i, j];
+                    }
+                }
+            }
+        }
+
+        function generateMoves(state) {
+            const moves = [];
+            const [x, y] = findPosition(state, 0);
+            const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+            for (let [dx, dy] of directions) {
+                const nx = x + dx;
+                const ny = y + dy;
+                if (nx >= 0 && nx < 3 && ny >= 0 && ny < 3) {
+                    const newState = state.map(row => row.slice());
+                    [newState[x][y], newState[nx][ny]] = [newState[nx][ny], newState[x][y]];
+                    moves.push(newState);
+                }
+            }
+            return moves;
+        }
+
+        function solvePuzzle(initialState) {
+            const queue = [[initialState, []]];  // Cola de prioridad
+            const visited = new Set();  // Conjunto de estados visitados
+
+            while (queue.length > 0) {
+                const [currentState, path] = queue.shift();
+
+                if (JSON.stringify(currentState) === JSON.stringify(goalState)) {
+                    return path.concat([currentState]);
+                }
+
+                visited.add(JSON.stringify(currentState));
+
+                const nextMoves = generateMoves(currentState);
+
+                nextMoves.forEach(nextState => {
+                    if (!visited.has(JSON.stringify(nextState))) {
+                        queue.push([nextState, path.concat([currentState])]);
+                    }
+                });
+            }
+            return null;
+        }
+
+        function renderPuzzle(state) {
+            const table = document.getElementById('puzzle-board');
+            table.innerHTML = '';  // Limpiar la tabla
+
+            state.forEach(row => {
+                const tr = document.createElement('tr');
+                row.forEach(cell => {
+                    const td = document.createElement('td');
+                    td.textContent = cell === 0 ? '' : cell;
+                    tr.appendChild(td);
+                });
+                table.appendChild(tr);
+            });
+        }
+
+        document.getElementById('solve-btn').addEventListener('click', function() {
+            const solution = solvePuzzle(initialState);
+
+            if (solution) {
+                solution.forEach((step, index) => {
+                    setTimeout(() => {
+                        renderPuzzle(step);
+                    }, index * 4000);  // Intervalo de 4 segundos entre cada movimiento
+                });
+            } else {
+                alert('No se pudo encontrar una solución');
+            }
+        });
+
+        // Renderizar el estado inicial
+        renderPuzzle(initialState);
+    </script>
+</body>
+</html>
